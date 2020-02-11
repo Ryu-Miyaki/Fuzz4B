@@ -1,0 +1,14 @@
+__pycache__/*
+in/
+aflharness_ex
+aflharness
+aflharness_notforAFL
+out/
+log.txt
+reduced_testcases/
+compare_gdb/
+replicate_gdb/
+gdb_config_files/
+GOMIBAKO/*
+MysteryRunner
+fuzzingtool.fbp
