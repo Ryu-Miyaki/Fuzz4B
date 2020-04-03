@@ -51,9 +51,9 @@ class EventHandler(pyinotify.ProcessEvent):
 				self.grid.AppendRows(1)
 			
 			if self.pathform==PathForm.Absolute:
-				self.grid.SetCellValue(self.rows,CRASH_TESTCASE,event.pathname)
+				wx.CallAfter(self.grid.SetCellValue,self.rows,CRASH_TESTCASE,event.pathname)
 			elif self.pathform==PathForm.Relative:
-				self.grid.SetCellValue(self.rows,CRASH_TESTCASE,event.pathname.replace(os.getcwd(),"."))
+				wx.CallAfter(self.grid.SetCellValue,self.rows,CRASH_TESTCASE,event.pathname.replace(os.getcwd(),"."))
 
 			id=re.search("src:"+r'\d\d\d\d\d\d',os.path.basename(event.pathname))
 			id=id.group()
@@ -63,9 +63,9 @@ class EventHandler(pyinotify.ProcessEvent):
 			originaltestcase=os.getcwd()+originaltestcase.lstrip(".")
 
 			if self.pathform==PathForm.Absolute:
-				self.grid.SetCellValue(self.rows,ORIGINAL_TESTCASE,originaltestcase)
+				wx.CallAfter(self.grid.SetCellValue,self.rows,ORIGINAL_TESTCASE,originaltestcase)
 			elif self.pathform==PathForm.Relative:
-				self.grid.SetCellValue(self.rows,ORIGINAL_TESTCASE,originaltestcase.replace(os.getcwd(),"."))
+				wx.CallAfter(self.grid.SetCellValue,self.rows,ORIGINAL_TESTCASE,originaltestcase.replace(os.getcwd(),"."))
 
 
 			gdbfile=open("./gdb_config_files/crash/gdb_"+os.path.basename(event.pathname),'w')
@@ -75,7 +75,7 @@ class EventHandler(pyinotify.ProcessEvent):
 			gdbfile.write("start < \'"+originaltestcase+"\'")
 			gdbfile.close()
 		
-			self.grid.AutoSize()
+			wx.CallAfter(self.grid.AutoSize)
 			self.rows=self.rows+1
 		
 # Implementing Frame_StartupScreen
