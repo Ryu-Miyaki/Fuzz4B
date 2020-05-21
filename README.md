@@ -7,4 +7,6 @@ The following systems should be installed before you install Fuzz4B.
 - xterm(Execute `sudo apt install xterm` to install)
 - xclip(Execute `sudo apt-get install xclip` to install)
 
+[![Introduction](http://img.youtube.com/vi/wo6VcdlPoM0/0.jpg)](http://www.youtube.com/watch?v=wo6VcdlPoM0 "https://img.youtube.com/vi/wo6VcdlPoM0/0.jpg")
+
 Ryu Miyaki(e-mail: miyaki AT ertl.jp)
