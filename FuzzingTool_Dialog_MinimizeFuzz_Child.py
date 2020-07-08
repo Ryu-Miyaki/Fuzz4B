@@ -25,7 +25,10 @@ class FuzzingTool_Dialog_MinimizeFuzz_Child( FuzzingTool_Dialog_MinimizeFuzz ):
 		# TODO: Implement bSizer_YesorNoOnYesButtonClick
 		self.bSizer_YesorNoYes.Enable(False)
 		self.bSizer_YesorNoNo.Enable(False)
-		dd=TryDeltaDebugging(program=self.program,input=self.fuzz)
+		timeout=self.spinCtrlDouble_timeout.GetValue()
+		if timeout==0:
+			timeout=None
+		dd=TryDeltaDebugging(program=self.program,input=self.fuzz,timeout=timeout)
 		dd.DeltaDebug()
 		dd.Out(dir="./reduced_testcases",filename=os.path.basename(self.fuzz)+"_min")
 		self.minimizedfuzz=os.getcwd()+"/reduced_testcases/"+os.path.basename(self.fuzz)+"_min"

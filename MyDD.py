@@ -1,9 +1,10 @@
 import subprocess
 import os
 class MyDeltaDebuggingReducer(object):
-    def __init__(self,runner,log_test=False):
+    def __init__(self,runner,log_test=False,timeout=None):
         self.runner=runner
         self.log_test=log_test
+        self.timeout=timeout
         self.reset()
     
     def reset(self):
@@ -16,8 +17,13 @@ class MyDeltaDebuggingReducer(object):
                 print("cache :)")
             return self.cache[inp]
         try:
-            subprocess.check_call(self.runner+" "+"< "+"./tmp/output"+str(self.tests),shell=True,stdout=self.devnull,stderr=self.devnull)
-        except:
+            input=open("./tmp/output"+str(self.tests),"r")
+            subprocess.run([self.runner],stdin=input,stdout=self.devnull,stderr=self.devnull,timeout=self.timeout,check=True)
+        except subprocess.TimeoutExpired:
+            if self.log_test==True:
+                print("timeout...")
+            flag=True
+        except subprocess.CalledProcessError:
             if self.log_test==True:
                 print("crash!!")
             flag=False
@@ -26,6 +32,7 @@ class MyDeltaDebuggingReducer(object):
         finally:
             self.cache[inp]=flag
             self.tests+=1
+            input.close()
         return flag
 
     def reduce(self,inp):

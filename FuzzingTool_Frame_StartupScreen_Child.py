@@ -331,24 +331,22 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 			with open(file=self.Grid_Testcases.GetCellValue(self.choised_row,fuzztype),mode="rb") as crashtestcase:
 						text=crashtestcase.read()
 						if self.textform==TextForm.String:
-							if fuzztype==CRASH_TESTCASE:
-								self.TextCtrl_CrashTestcase.WriteText(text.decode(errors='replace'))
-							elif fuzztype==ORIGINAL_TESTCASE:
-								self.TextCtrl_OriginalTestcase.WriteText(text.decode(errors='replace'))
-							elif fuzztype==MINIMIZED_TESTCASE:
-								self.TextCtrl_MinimizedTestcase.WriteText(text.decode(errors='replace'))
+							self.WriteFuzztoTextCtrl(fuzztype,text.decode(errors='replace'))
 						else:
 							with open("tmp.txt",mode="w") as tmp:
 								print(text,file=tmp)
 							with open("tmp.txt",mode="r") as tmp:
 								text=tmp.read()
-								if fuzztype==CRASH_TESTCASE:
-									self.TextCtrl_CrashTestcase.WriteText(text[2:-2])
-								elif fuzztype==ORIGINAL_TESTCASE:
-									self.TextCtrl_OriginalTestcase.WriteText(text[2:-2])
-								elif fuzztype==MINIMIZED_TESTCASE:
-									self.TextCtrl_MinimizedTestcase.WriteText(text[2:-2])
+								self.WriteFuzztoTextCtrl(fuzztype,text[2:-2])
 							os.remove("tmp.txt")
+
+	def WriteFuzztoTextCtrl(self,fuzztype,text):
+		if fuzztype==CRASH_TESTCASE:
+			self.TextCtrl_CrashTestcase.WriteText(text)
+		elif fuzztype==ORIGINAL_TESTCASE:
+			self.TextCtrl_OriginalTestcase.WriteText(text)
+		elif fuzztype==MINIMIZED_TESTCASE:
+			self.TextCtrl_MinimizedTestcase.WriteText(text)
 	
 	def EnableDebugMenu(self,enable):
 		self.MenuItem_MinimizeFuzz.Enable(enable)

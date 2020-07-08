@@ -572,6 +572,20 @@ class Dialog_MinimizeFuzz ( wx.Dialog ):
 
 		bSizer_MinimizeFuzz.Add( self.Text_ChoisedFuzz, 0, wx.ALL, 5 )
 
+		bSizer_SpinCtrlandText = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.Text_timeout = wx.StaticText( self, wx.ID_ANY, u"Timeout (in seconds)\nZero means disabling timeout.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Text_timeout.Wrap( -1 )
+
+		bSizer_SpinCtrlandText.Add( self.Text_timeout, 0, wx.ALL, 5 )
+
+		self.spinCtrlDouble_timeout = wx.SpinCtrlDouble( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 100, 3, 0.5 )
+		self.spinCtrlDouble_timeout.SetDigits( 1 )
+		bSizer_SpinCtrlandText.Add( self.spinCtrlDouble_timeout, 0, wx.ALL, 5 )
+
+
+		bSizer_MinimizeFuzz.Add( bSizer_SpinCtrlandText, 1, wx.EXPAND, 5 )
+
 		self.Text_AskMinimizeFuzz = wx.StaticText( self, wx.ID_ANY, u"Do you want to reduce this fuzz?", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.Text_AskMinimizeFuzz.Wrap( -1 )
 
