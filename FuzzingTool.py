@@ -686,8 +686,8 @@ class Dialog_InputTestcaseandRun ( wx.Dialog ):
 		self.TextCtrl_CommandforInputTestcaseandRun = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 450,-1 ), wx.TE_READONLY )
 		bSizer_CommandandCopyButton.Add( self.TextCtrl_CommandforInputTestcaseandRun, 0, wx.ALL, 5 )
 
-		self.Button_Copy = wx.Button( self, wx.ID_ANY, u"Copy", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
-		bSizer_CommandandCopyButton.Add( self.Button_Copy, 0, wx.ALL, 5 )
+		self.Button_Copy = wx.Button( self, wx.ID_ANY, u"Copy", wx.DefaultPosition, wx.Size( 50,-1 ), 0 )
+		bSizer_CommandandCopyButton.Add( self.Button_Copy, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 
 		bSizer_InputTestcaseandRun.Add( bSizer_CommandandCopyButton, 0, wx.EXPAND, 5 )
