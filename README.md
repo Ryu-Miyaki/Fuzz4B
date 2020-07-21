@@ -14,8 +14,8 @@ cd afl-2.52b
 make
 make install
 ```
-Run the following commands to intall required packages and clone repository.  
-If you use the Operating System other than Ubuntu 18.04 LTS, you should edit `ubuntu-18.04` of the last command.
+Run the following commands to intall the required packages and clone the repository.  
+If you are using an OS other than Ubuntu 18.04 LTS, you should edit `ubuntu-18.04` of the last command.
 ```
 sudo apt install xterm xclip libsdl2-2.0-0
 git clone https://github.com/Ryu-Miyaki/Fuzz4B
