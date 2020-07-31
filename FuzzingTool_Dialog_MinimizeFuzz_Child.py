@@ -6,6 +6,8 @@ from FuzzingTool_Dialog_MinimizeFuzz import FuzzingTool_Dialog_MinimizeFuzz
 from DDtry import TryDeltaDebugging
 import os
 import subprocess
+import ast
+from FuzzingTool_Dialog_GrammarReduceError_Child import FuzzingTool_Dialog_GrammarReduceError_Child
 
 # Implementing Dialog_MinimizeFuzz
 class FuzzingTool_Dialog_MinimizeFuzz_Child( FuzzingTool_Dialog_MinimizeFuzz ):
@@ -14,9 +16,29 @@ class FuzzingTool_Dialog_MinimizeFuzz_Child( FuzzingTool_Dialog_MinimizeFuzz ):
 		self.program=program
 		self.fuzz=fuzz
 		self.Text_ChoisedFuzz.SetLabel("Fuzz you selected: "+self.fuzz)
+		self.checkbox=self.checkBox_GrammarReduce.GetValue()
 		self.DoLayoutAdaptation()
 
 	# Handlers for Dialog_MinimizeFuzz events.
+	def checkBox_GrammarReduceOnCheckBox( self, event ):
+		# TODO: Implement checkBox_GrammarReduceOnCheckBox
+		self.checkbox=self.checkBox_GrammarReduce.GetValue()
+		if self.checkbox==True:
+			self.Text_ChooseGrammarFile.Show()
+			self.FilePicker_GrammarFile.Show()
+			if self.FilePicker_GrammarFile.GetPath()=="":
+				self.bSizer_YesorNoYes.Disable()
+			self.DoLayoutAdaptation()
+		elif self.checkbox==False:
+			self.Text_ChooseGrammarFile.Hide()
+			self.FilePicker_GrammarFile.Hide()
+			self.bSizer_YesorNoYes.Enable()
+			self.DoLayoutAdaptation()
+	
+	def FilePicker_GrammarFileOnFileChanged( self, event ):
+			# TODO: Implement FilePicker_GrammarFileOnFileChanged
+			self.bSizer_YesorNoYes.Enable()
+	
 	def bSizer_YesorNoOnNoButtonClick( self, event ):
 		# TODO: Implement bSizer_YesorNoOnNoButtonClick
 		self.EndModal(False)
@@ -28,10 +50,23 @@ class FuzzingTool_Dialog_MinimizeFuzz_Child( FuzzingTool_Dialog_MinimizeFuzz ):
 		timeout=self.spinCtrlDouble_timeout.GetValue()
 		if timeout==0:
 			timeout=None
-		dd=TryDeltaDebugging(program=self.program,input=self.fuzz,timeout=timeout)
-		dd.DeltaDebug()
-		dd.Out(dir="./reduced_testcases",filename=os.path.basename(self.fuzz)+"_min")
+		reducer=TryDeltaDebugging(program=self.program,input=self.fuzz,timeout=timeout)
+		if self.checkbox==False:
+			reducer.DeltaDebug()
+		elif self.checkbox==True:
+			grammarfile=self.FilePicker_GrammarFile.GetPath()
+			grammarfile=open(grammarfile,"r")
+			grammar=grammarfile.read()
+			grammarfile.close()
+			grammar=ast.literal_eval(grammar)
+			try:
+				reducer.GrammarReduce(grammar)
+			except:
+				dialog=FuzzingTool_Dialog_GrammarReduceError_Child(None)
+				dialog.ShowModal()
+				dialog.Destroy()
+				self.EndModal(False)
+				return
+		reducer.Out(dir="./reduced_testcases",filename=os.path.basename(self.fuzz)+"_min")
 		self.minimizedfuzz=os.getcwd()+"/reduced_testcases/"+os.path.basename(self.fuzz)+"_min"
 		self.EndModal(True)
-
-

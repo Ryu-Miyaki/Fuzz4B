@@ -9,6 +9,14 @@ class FuzzingTool_Dialog_MinimizeFuzz( FuzzingTool.Dialog_MinimizeFuzz ):
 		FuzzingTool.Dialog_MinimizeFuzz.__init__( self, parent )
 
 	# Handlers for Dialog_MinimizeFuzz events.
+	def checkBox_GrammarReduceOnCheckBox( self, event ):
+		# TODO: Implement checkBox_GrammarReduceOnCheckBox
+		pass
+
+	def FilePicker_GrammarFileOnFileChanged( self, event ):
+		# TODO: Implement FilePicker_GrammarFileOnFileChanged
+		pass
+
 	def bSizer_YesorNoOnNoButtonClick( self, event ):
 		# TODO: Implement bSizer_YesorNoOnNoButtonClick
 		pass

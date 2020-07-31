@@ -1,3 +1,4 @@
 pyperclip
 pyinotify
 wxPython
+fuzzingbook

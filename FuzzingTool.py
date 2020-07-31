@@ -591,6 +591,21 @@ class Dialog_MinimizeFuzz ( wx.Dialog ):
 
 		bSizer_MinimizeFuzz.Add( self.Text_AskMinimizeFuzz, 0, wx.ALL, 5 )
 
+		self.checkBox_GrammarReduce = wx.CheckBox( self, wx.ID_ANY, u"Grammar based reduction", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer_MinimizeFuzz.Add( self.checkBox_GrammarReduce, 0, wx.ALL, 5 )
+
+		self.Text_ChooseGrammarFile = wx.StaticText( self, wx.ID_ANY, u"Please select a grammar file.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Text_ChooseGrammarFile.Wrap( -1 )
+
+		self.Text_ChooseGrammarFile.Hide()
+
+		bSizer_MinimizeFuzz.Add( self.Text_ChooseGrammarFile, 0, wx.ALL, 5 )
+
+		self.FilePicker_GrammarFile = wx.FilePickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
+		self.FilePicker_GrammarFile.Hide()
+
+		bSizer_MinimizeFuzz.Add( self.FilePicker_GrammarFile, 0, wx.ALL|wx.EXPAND, 5 )
+
 		bSizer_YesorNo = wx.StdDialogButtonSizer()
 		self.bSizer_YesorNoYes = wx.Button( self, wx.ID_YES )
 		bSizer_YesorNo.AddButton( self.bSizer_YesorNoYes )
@@ -608,6 +623,8 @@ class Dialog_MinimizeFuzz ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 
 		# Connect Events
+		self.checkBox_GrammarReduce.Bind( wx.EVT_CHECKBOX, self.checkBox_GrammarReduceOnCheckBox )
+		self.FilePicker_GrammarFile.Bind( wx.EVT_FILEPICKER_CHANGED, self.FilePicker_GrammarFileOnFileChanged )
 		self.bSizer_YesorNoNo.Bind( wx.EVT_BUTTON, self.bSizer_YesorNoOnNoButtonClick )
 		self.bSizer_YesorNoYes.Bind( wx.EVT_BUTTON, self.bSizer_YesorNoOnYesButtonClick )
 
@@ -616,10 +633,56 @@ class Dialog_MinimizeFuzz ( wx.Dialog ):
 
 
 	# Virtual event handlers, overide them in your derived class
+	def checkBox_GrammarReduceOnCheckBox( self, event ):
+		event.Skip()
+
+	def FilePicker_GrammarFileOnFileChanged( self, event ):
+		event.Skip()
+
 	def bSizer_YesorNoOnNoButtonClick( self, event ):
 		event.Skip()
 
 	def bSizer_YesorNoOnYesButtonClick( self, event ):
+		event.Skip()
+
+
+###########################################################################
+## Class Dialog_GrammarReduceError
+###########################################################################
+
+class Dialog_GrammarReduceError ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = 0 )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+		bSizer_GrammarReduceError = wx.BoxSizer( wx.VERTICAL )
+
+		self.Text_GrammarReduceError = wx.StaticText( self, wx.ID_ANY, u"Reduction is failed. Please confirm the followings.\n- The fuzz needs to follow the grammar of input.\n- The grammar needs to be defined correctly.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Text_GrammarReduceError.Wrap( -1 )
+
+		bSizer_GrammarReduceError.Add( self.Text_GrammarReduceError, 0, wx.ALL, 5 )
+
+		self.Button_OK = wx.Button( self, wx.ID_ANY, u"OK", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer_GrammarReduceError.Add( self.Button_OK, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+
+
+		self.SetSizer( bSizer_GrammarReduceError )
+		self.Layout()
+		bSizer_GrammarReduceError.Fit( self )
+
+		self.Centre( wx.BOTH )
+
+		# Connect Events
+		self.Button_OK.Bind( wx.EVT_BUTTON, self.Button_OKOnButtonClick )
+
+	def __del__( self ):
+		pass
+
+
+	# Virtual event handlers, overide them in your derived class
+	def Button_OKOnButtonClick( self, event ):
 		event.Skip()
 
 
