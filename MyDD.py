@@ -1,3 +1,7 @@
+# The content of "The Fuzzing Book" (https://www.fuzzingbook.org/) written by Andreas Zeller, Rahul Gopinath, Marcel Böhme, Gordon Fraser, and Christian Holler is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+# The source code that is part of the content, as well as the source code used to format and display that content is licensed under the MIT License. 
+# We copied and modified the source code from the chapter "Reducing Failure-Inducing Inputs" (https://www.fuzzingbook.org/html/Reducer.html) of "The Fuzzing Book".
+
 import subprocess
 import os
 class MyDeltaDebuggingReducer(object):
