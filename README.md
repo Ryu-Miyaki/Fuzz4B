@@ -31,6 +31,6 @@ The following systems should be installed before you install Fuzz4B.
 - xclip (Execute `sudo apt-get install xclip` to install)
 -->
 # License
-The source code is licensed MIT.  
+This software is released under the MIT License, see LICENSE.md.  
 
 Ryu Miyaki (e-mail: miyaki AT ertl.jp)
