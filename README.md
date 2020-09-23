@@ -30,5 +30,7 @@ The following systems should be installed before you install Fuzz4B.
 - xterm (Execute `sudo apt install xterm` to install)
 - xclip (Execute `sudo apt-get install xclip` to install)
 -->
+# License
+The source code is licensed MIT.  
 
 Ryu Miyaki (e-mail: miyaki AT ertl.jp)
