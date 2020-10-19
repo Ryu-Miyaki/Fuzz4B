@@ -12,3 +12,4 @@ gdb_config_files/
 GOMIBAKO/*
 MysteryRunner
 fuzzingtool.fbp
+AFLHARNESS
