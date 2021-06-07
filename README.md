@@ -22,6 +22,16 @@ git clone https://github.com/Ryu-Miyaki/Fuzz4B
 cd Fuzz4B
 pip3 install -r requirements.txt -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04/
 ```
+After that, run the following commands to compile `entrypoint.c` in Fuzz4B repository.
+```
+cd Fuzz4B
+afl-gcc -g -c entrypoint.c
+```
+To start using Fuzz4B, run `ExecTool.py` with Python3.
+```
+python3 ExecTool.py
+```
+
 <!--
 The following systems should be installed before you install Fuzz4B.
 - AFL (See [here](https://github.com/google/AFL/blob/master/docs/INSTALL) to install)
