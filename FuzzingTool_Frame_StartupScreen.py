@@ -41,6 +41,10 @@ class FuzzingTool_Frame_StartupScreen( FuzzingTool.Frame_StartupScreen ):
 		# TODO: Implement MenuItem_InputTestcaseandRunOnMenuSelection
 		pass
 
+	def MenuItem_SBFLOnMenuSelection( self, event ):
+		# TODO: Implement MenuItem_SBFLOnMenuSelection
+		pass
+
 	def Grid_TestcasesOnGridLabelLeftClick( self, event ):
 		# TODO: Implement Grid_TestcasesOnGridLabelLeftClick
 		pass

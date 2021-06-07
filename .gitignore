@@ -13,3 +13,5 @@ GOMIBAKO/*
 MysteryRunner
 fuzzingtool.fbp
 AFLHARNESS
+entrypoint.o
+target_program

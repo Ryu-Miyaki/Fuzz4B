@@ -7,9 +7,6 @@ import os
 import sys
 import re
 from FuzzingTool_Frame_StartupScreen import FuzzingTool_Frame_StartupScreen
-from FuzzingTool_Dialog_AskCompileforAFL_Child import FuzzingTool_Dialog_AskCompileforAFL_Child
-from FuzzingTool_Dialog_CompileforAFLCommand_Child import FuzzingTool_Dialog_CompileforAFLCommand_Child
-from FuzzingTool_Dialog_ProgramChoose_Child import FuzzingTool_Dialog_ProgramChoose_Child
 from FuzzingTool_Dialog_InputChoose_Child import FuzzingTool_Dialog_InputChoose_Child
 from FuzzingTool_Dialog_AskStartFuzzing_Child import FuzzingTool_Dialog_AskStartFuzzing_Child
 from FuzzingTool_Dialog_AskStopFuzzing_Child import FuzzingTool_Dialog_AskStopFuzzing_Child
@@ -17,6 +14,11 @@ from FuzzingTool_Dialog_ErrorLog_Child import FuzzingTool_Dialog_ErrorLog_Child
 from FuzzingTool_Dialog_MinimizeFuzz_Child import FuzzingTool_Dialog_MinimizeFuzz_Child
 from FuzzingTool_Dialog_FuzzAlreadyMinimized_Child import FuzzingTool_Dialog_FuzzAlreadyMinimized_Child
 from FuzzingTool_Dialog_InputTestcaseandRun_Child import FuzzingTool_Dialog_InputTestcaseandRun_Child
+from SBFL import SBFL
+from FuzzingTool_Dialog_SBFLResult_Child import FuzzingTool_Dialog_SBFLResult_Child
+from FuzzingTool_Dialog_ObjectFileChoose_Child import FuzzingTool_Dialog_ObjectFileChoose_Child
+from FuzzingTool_Dialog_CompilationError_Child import FuzzingTool_Dialog_CompilationError_Child
+from FuzzingTool_Dialog_SBFLTargetChoose_Child import FuzzingTool_Dialog_SBFLTargetChoose_Child
 
 from enum import Enum
 class State(Enum):
@@ -88,12 +90,11 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 		self.program=""
 		self.input_path=""
 		self.choised_row=-1
-
+		
 		self.Grid_Testcases.AutoSize()
-
+		
 		self.handler=EventHandler(grid=self.Grid_Testcases)
 
-	
 	def Frame_StartupScreenOnClose( self, event ):
 		if self.state==State.FuzzingNow:
 			self.fuzzer.terminate()
@@ -156,39 +157,42 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 			self.wdd = self.wm.add_watch('./out/crashes', pyinotify.IN_CREATE)
 
 	def MenuItem_StartFuzzingOnMenuSelection( self, event ):
-		dialog=FuzzingTool_Dialog_AskCompileforAFL_Child(None)
+		dialog=FuzzingTool_Dialog_ObjectFileChoose_Child(None)
 		if dialog.ShowModal()==False:
 			dialog.Destroy()
-			dialog=FuzzingTool_Dialog_CompileforAFLCommand_Child(None)
-			dialog.ShowModal()
-			dialog.Destroy()
 		else:
+			self.compilationdir=dialog.compilationdir
+			self.objectfile_list=dialog.objectfile_list
 			dialog.Destroy()
-			dialog=FuzzingTool_Dialog_ProgramChoose_Child(None)
+			subprocess.run(["objcopy","--redefine-sym","main=entry", self.objectfile_list[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+			try:
+				subprocess.run(["objcopy","--redefine-sym","main=entry", self.objectfile_list[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+				subprocess.run(["gcc", "-g", "--coverage", os.path.dirname(os.path.abspath(__file__)) + "/entrypoint.o"] + self.objectfile_list + ["-o", os.path.dirname(os.path.abspath(__file__)) + "/target_program"], check=True)
+			except subprocess.CalledProcessError as e:
+				dialog=FuzzingTool_Dialog_CompilationError_Child(None)
+				dialog.ShowModal()
+				dialog.Destroy()
+				return
+			self.program=os.path.dirname(os.path.abspath(__file__)) + "/target_program"
+			dialog=FuzzingTool_Dialog_InputChoose_Child(None)
 			if dialog.ShowModal()==False:
 				dialog.Destroy()
 			else:
-				self.program=dialog.program
+				self.input_path=dialog.input_path
 				dialog.Destroy()
-				dialog=FuzzingTool_Dialog_InputChoose_Child(None)
+				dialog=FuzzingTool_Dialog_AskStartFuzzing_Child(parent=None,program=self.program,input_path=self.input_path)
 				if dialog.ShowModal()==False:
-					dialog.Destroy()
-				else:
-					self.input_path=dialog.input_path
-					dialog.Destroy()
-					dialog=FuzzingTool_Dialog_AskStartFuzzing_Child(parent=None,program=self.program,input_path=self.input_path)
-					if dialog.ShowModal()==False:
-						if dialog.errorcode=="":
-							dialog.Destroy()
-						else:
-							errorcode=dialog.errorcode
-							dialog.Destroy()
-							dialog=FuzzingTool_Dialog_ErrorLog_Child(None,errorcode=errorcode.strip('[-] PROGRAM ABORT: '))
-							if dialog.ShowModal()==True:
-								dialog.Destroy()
-					else:
+					if dialog.errorcode=="":
 						dialog.Destroy()
-						self.ChangeState(State.FuzzingNow)
+					else:
+						errorcode=dialog.errorcode
+						dialog.Destroy()
+						dialog=FuzzingTool_Dialog_ErrorLog_Child(None,errorcode=errorcode.strip('[-] PROGRAM ABORT: '))
+						if dialog.ShowModal()==True:
+							dialog.Destroy()
+				else:
+					dialog.Destroy()
+					self.ChangeState(State.FuzzingNow)
 
 	def MenuItem_StopFuzzingOnMenuSelection( self, event ):
 		dialog=FuzzingTool_Dialog_AskStopFuzzing_Child(None)
@@ -292,6 +296,20 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 		dialog=FuzzingTool_Dialog_InputTestcaseandRun_Child(None,program=self.program,crashtestcase=crashtestcase,originaltestcase=originaltestcase,minimizedtestcase=minimizedtestcase)
 		dialog.ShowModal()
 		dialog.Destroy()
+	
+	def MenuItem_SBFLOnMenuSelection( self, event ):
+		# TODO: Implement MenuItem_SBFLOnMenuSelection
+		dialog=FuzzingTool_Dialog_SBFLTargetChoose_Child(None, compilation_dir=self.compilationdir)
+		if dialog.ShowModal()==False:
+			dialog.Destroy()
+		else:
+			sourcefile=dialog.file_list
+			dialog.Destroy()
+			sbfl=SBFL(program=self.program, success_testcase_dir=os.getcwd()+"/out/queue/", fault_testcase_dir=os.getcwd()+"/out/crashes/", compilation_dir=self.compilationdir, objectfiles_dir=[os.path.dirname(objectfile) for objectfile in self.objectfile_list], targetfiles=sourcefile)
+			result=sbfl.ExecSBFL()
+			dialog=FuzzingTool_Dialog_SBFLResult_Child(None,sbfl_result=result)
+			dialog.ShowModal()
+			dialog.Destroy()
 
 	def Grid_TestcasesOnGridLabelLeftClick( self, event ):
 		if self.state==State.Initial:
@@ -329,16 +347,16 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 			pass
 		else:
 			with open(file=self.Grid_Testcases.GetCellValue(self.choised_row,fuzztype),mode="rb") as crashtestcase:
-						text=crashtestcase.read()
-						if self.textform==TextForm.String:
-							self.WriteFuzztoTextCtrl(fuzztype,text.decode(errors='replace'))
-						else:
-							with open("tmp.txt",mode="w") as tmp:
-								print(text,file=tmp)
-							with open("tmp.txt",mode="r") as tmp:
-								text=tmp.read()
-								self.WriteFuzztoTextCtrl(fuzztype,text[2:-2])
-							os.remove("tmp.txt")
+				text=crashtestcase.read()
+				if self.textform==TextForm.String:
+					self.WriteFuzztoTextCtrl(fuzztype,text.decode(errors='replace'))
+				else:
+					with open("tmp.txt",mode="w") as tmp:
+						print(text,file=tmp)
+					with open("tmp.txt",mode="r") as tmp:
+						text=tmp.read()
+						self.WriteFuzztoTextCtrl(fuzztype,text[2:-2])
+					os.remove("tmp.txt")
 
 	def WriteFuzztoTextCtrl(self,fuzztype,text):
 		if fuzztype==CRASH_TESTCASE:
@@ -351,4 +369,5 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 	def EnableDebugMenu(self,enable):
 		self.MenuItem_MinimizeFuzz.Enable(enable)
 		self.MenuItem_InputTestcaseandRun.Enable(enable)
+		self.MenuItem_SBFL.Enable(enable)
 		

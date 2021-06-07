@@ -55,6 +55,10 @@ class Frame_StartupScreen ( wx.Frame ):
 		self.Menu_DegugMenu.Append( self.MenuItem_InputTestcaseandRun )
 		self.MenuItem_InputTestcaseandRun.Enable( False )
 
+		self.MenuItem_SBFL = wx.MenuItem( self.Menu_DegugMenu, wx.ID_ANY, u"Fault Localization", wx.EmptyString, wx.ITEM_NORMAL )
+		self.Menu_DegugMenu.Append( self.MenuItem_SBFL )
+		self.MenuItem_SBFL.Enable( False )
+
 		self.Menubar_Menubar.Append( self.Menu_DegugMenu, u"Debug" )
 
 		self.SetMenuBar( self.Menubar_Menubar )
@@ -145,6 +149,7 @@ class Frame_StartupScreen ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.MenuItem_PathFormRelativeOnMenuSelection, id = self.MenuItem_PathFormRelative.GetId() )
 		self.Bind( wx.EVT_MENU, self.MenuItem_MinimizeFuzzOnMenuSelection, id = self.MenuItem_MinimizeFuzz.GetId() )
 		self.Bind( wx.EVT_MENU, self.MenuItem_InputTestcaseandRunOnMenuSelection, id = self.MenuItem_InputTestcaseandRun.GetId() )
+		self.Bind( wx.EVT_MENU, self.MenuItem_SBFLOnMenuSelection, id = self.MenuItem_SBFL.GetId() )
 		self.Grid_Testcases.Bind( wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.Grid_TestcasesOnGridLabelLeftClick )
 
 	def __del__( self ):
@@ -176,100 +181,38 @@ class Frame_StartupScreen ( wx.Frame ):
 	def MenuItem_InputTestcaseandRunOnMenuSelection( self, event ):
 		event.Skip()
 
+	def MenuItem_SBFLOnMenuSelection( self, event ):
+		event.Skip()
+
 	def Grid_TestcasesOnGridLabelLeftClick( self, event ):
 		event.Skip()
 
 
 ###########################################################################
-## Class Dialog_AskCompileforAFL
+## Class Dialog_CompilationError
 ###########################################################################
 
-class Dialog_AskCompileforAFL ( wx.Dialog ):
+class Dialog_CompilationError ( wx.Dialog ):
 
 	def __init__( self, parent ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = 0 )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
-		bSizer_AskCompileforAFL = wx.BoxSizer( wx.VERTICAL )
+		bSizer_CompilationError = wx.BoxSizer( wx.VERTICAL )
 
-		self.Text_AskCompileforAFL = wx.StaticText( self, wx.ID_ANY, u"Did you compile your program by afl-gcc or afl-g++?", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_AskCompileforAFL.Wrap( -1 )
+		self.Text_CompilationError = wx.StaticText( self, wx.ID_ANY, u"An error occurred when linking the object files.\nPlease check the terminal for details.", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTER_HORIZONTAL )
+		self.Text_CompilationError.Wrap( -1 )
 
-		bSizer_AskCompileforAFL.Add( self.Text_AskCompileforAFL, 0, wx.ALL, 5 )
-
-		bSizer_YesorNo = wx.StdDialogButtonSizer()
-		self.bSizer_YesorNoYes = wx.Button( self, wx.ID_YES )
-		bSizer_YesorNo.AddButton( self.bSizer_YesorNoYes )
-		self.bSizer_YesorNoNo = wx.Button( self, wx.ID_NO )
-		bSizer_YesorNo.AddButton( self.bSizer_YesorNoNo )
-		bSizer_YesorNo.Realize();
-
-		bSizer_AskCompileforAFL.Add( bSizer_YesorNo, 1, wx.EXPAND, 5 )
-
-
-		self.SetSizer( bSizer_AskCompileforAFL )
-		self.Layout()
-		bSizer_AskCompileforAFL.Fit( self )
-
-		self.Centre( wx.BOTH )
-
-		# Connect Events
-		self.bSizer_YesorNoNo.Bind( wx.EVT_BUTTON, self.bSizer_YesorNoOnNoButtonClick )
-		self.bSizer_YesorNoYes.Bind( wx.EVT_BUTTON, self.bSizer_YesorNoOnYesButtonClick )
-
-	def __del__( self ):
-		pass
-
-
-	# Virtual event handlers, overide them in your derived class
-	def bSizer_YesorNoOnNoButtonClick( self, event ):
-		event.Skip()
-
-	def bSizer_YesorNoOnYesButtonClick( self, event ):
-		event.Skip()
-
-
-###########################################################################
-## Class Dialog_CompileforAFLCommand
-###########################################################################
-
-class Dialog_CompileforAFLCommand ( wx.Dialog ):
-
-	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = 0 )
-
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-		bSizer_CompileforAFLCommand = wx.BoxSizer( wx.VERTICAL )
-
-		self.Text_PleaseCompileforAFL = wx.StaticText( self, wx.ID_ANY, u"Please compile your program for AFL by one of the following commands.", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_PleaseCompileforAFL.Wrap( -1 )
-
-		bSizer_CompileforAFLCommand.Add( self.Text_PleaseCompileforAFL, 0, wx.ALL, 5 )
-
-		self.Text_CompileCommandforC = wx.StaticText( self, wx.ID_ANY, u"C program: afl-gcc -o <file> <source_code>", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_CompileCommandforC.Wrap( -1 )
-
-		bSizer_CompileforAFLCommand.Add( self.Text_CompileCommandforC, 0, wx.ALL, 5 )
-
-		self.Text_CompileCommandforCplusplus = wx.StaticText( self, wx.ID_ANY, u"C++ program: afl-g++ -o <file> <source_code>", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_CompileCommandforCplusplus.Wrap( -1 )
-
-		bSizer_CompileforAFLCommand.Add( self.Text_CompileCommandforCplusplus, 0, wx.ALL, 5 )
-
-		self.Text_ExplanationParameter = wx.StaticText( self, wx.ID_ANY, u"<file>: executable file <source_code>: path of source code", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_ExplanationParameter.Wrap( -1 )
-
-		bSizer_CompileforAFLCommand.Add( self.Text_ExplanationParameter, 0, wx.ALL, 5 )
+		bSizer_CompilationError.Add( self.Text_CompilationError, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
 		self.Button_OK = wx.Button( self, wx.ID_ANY, u"OK", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CompileforAFLCommand.Add( self.Button_OK, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		bSizer_CompilationError.Add( self.Button_OK, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
 
-		self.SetSizer( bSizer_CompileforAFLCommand )
+		self.SetSizer( bSizer_CompilationError )
 		self.Layout()
-		bSizer_CompileforAFLCommand.Fit( self )
+		bSizer_CompilationError.Fit( self )
 
 		self.Centre( wx.BOTH )
 
@@ -282,63 +225,6 @@ class Dialog_CompileforAFLCommand ( wx.Dialog ):
 
 	# Virtual event handlers, overide them in your derived class
 	def Button_OKOnButtonClick( self, event ):
-		event.Skip()
-
-
-###########################################################################
-## Class Dialog_ProgramChoose
-###########################################################################
-
-class Dialog_ProgramChoose ( wx.Dialog ):
-
-	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = 0 )
-
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-		bSizer_ProgramChoose = wx.BoxSizer( wx.VERTICAL )
-
-		self.Text_ChooseProgram = wx.StaticText( self, wx.ID_ANY, u"Please select an executable file for fuzzing.", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_ChooseProgram.Wrap( -1 )
-
-		bSizer_ProgramChoose.Add( self.Text_ChooseProgram, 0, wx.ALL, 5 )
-
-		self.FilePicker_ChooseProgram = wx.FilePickerCtrl( self, wx.ID_ANY, u"./", u"Select a file", wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
-		bSizer_ProgramChoose.Add( self.FilePicker_ChooseProgram, 0, wx.ALL|wx.EXPAND, 5 )
-
-		bSizer_OKorCancel = wx.StdDialogButtonSizer()
-		self.bSizer_OKorCancelOK = wx.Button( self, wx.ID_OK )
-		bSizer_OKorCancel.AddButton( self.bSizer_OKorCancelOK )
-		self.bSizer_OKorCancelCancel = wx.Button( self, wx.ID_CANCEL )
-		bSizer_OKorCancel.AddButton( self.bSizer_OKorCancelCancel )
-		bSizer_OKorCancel.Realize();
-
-		bSizer_ProgramChoose.Add( bSizer_OKorCancel, 1, wx.EXPAND, 5 )
-
-
-		self.SetSizer( bSizer_ProgramChoose )
-		self.Layout()
-		bSizer_ProgramChoose.Fit( self )
-
-		self.Centre( wx.BOTH )
-
-		# Connect Events
-		self.FilePicker_ChooseProgram.Bind( wx.EVT_FILEPICKER_CHANGED, self.FilePicker_ChooseProgramOnFileChanged )
-		self.bSizer_OKorCancelCancel.Bind( wx.EVT_BUTTON, self.bSizer_OKorCancelOnCancelButtonClick )
-		self.bSizer_OKorCancelOK.Bind( wx.EVT_BUTTON, self.bSizer_OKorCancelOnOKButtonClick )
-
-	def __del__( self ):
-		pass
-
-
-	# Virtual event handlers, overide them in your derived class
-	def FilePicker_ChooseProgramOnFileChanged( self, event ):
-		event.Skip()
-
-	def bSizer_OKorCancelOnCancelButtonClick( self, event ):
-		event.Skip()
-
-	def bSizer_OKorCancelOnOKButtonClick( self, event ):
 		event.Skip()
 
 
@@ -828,144 +714,6 @@ class Dialog_InputTestcaseandRun ( wx.Dialog ):
 		event.Skip()
 
 	def Button_ExitOnButtonClick( self, event ):
-		event.Skip()
-
-
-###########################################################################
-## Class Dialog_ReplicateCrashCommand
-###########################################################################
-
-class Dialog_ReplicateCrashCommand ( wx.Dialog ):
-
-	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = 0 )
-
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-		bSizer_CommandandOKButton = wx.BoxSizer( wx.VERTICAL )
-
-		self.Text_YouCanReplicateCrashbyThisCommand = wx.StaticText( self, wx.ID_ANY, u"以下のコマンドを端末に入力することでクラッシュを再現できます", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_YouCanReplicateCrashbyThisCommand.Wrap( -1 )
-
-		bSizer_CommandandOKButton.Add( self.Text_YouCanReplicateCrashbyThisCommand, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
-		bSizer_CommandandCopyButton = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.TextCtrl_ReplicateCrashCommand = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 500,-1 ), wx.TE_READONLY )
-		bSizer_CommandandCopyButton.Add( self.TextCtrl_ReplicateCrashCommand, 0, wx.ALL, 5 )
-
-		self.Button_Copy = wx.Button( self, wx.ID_ANY, u"Copy", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
-		bSizer_CommandandCopyButton.Add( self.Button_Copy, 0, wx.ALL, 5 )
-
-
-		bSizer_CommandandOKButton.Add( bSizer_CommandandCopyButton, 1, wx.EXPAND, 5 )
-
-		self.RadioBtn_UseGDB = wx.RadioButton( self, wx.ID_ANY, u"GDBを使用する", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CommandandOKButton.Add( self.RadioBtn_UseGDB, 0, wx.ALL, 5 )
-
-		self.RadioBtn_NotUseGDB = wx.RadioButton( self, wx.ID_ANY, u"GDBを使用しない", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CommandandOKButton.Add( self.RadioBtn_NotUseGDB, 0, wx.ALL, 5 )
-
-		self.Button_OK = wx.Button( self, wx.ID_ANY, u"OK", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CommandandOKButton.Add( self.Button_OK, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
-
-		self.SetSizer( bSizer_CommandandOKButton )
-		self.Layout()
-		bSizer_CommandandOKButton.Fit( self )
-
-		self.Centre( wx.BOTH )
-
-		# Connect Events
-		self.Button_Copy.Bind( wx.EVT_BUTTON, self.Button_CopyOnButtonClick )
-		self.RadioBtn_UseGDB.Bind( wx.EVT_RADIOBUTTON, self.RadioBtn_UseGDBOnRadioButton )
-		self.RadioBtn_NotUseGDB.Bind( wx.EVT_RADIOBUTTON, self.RadioBtn_NotUseGDBOnRadioButton )
-		self.Button_OK.Bind( wx.EVT_BUTTON, self.Button_OKOnButtonClick )
-
-	def __del__( self ):
-		pass
-
-
-	# Virtual event handlers, overide them in your derived class
-	def Button_CopyOnButtonClick( self, event ):
-		event.Skip()
-
-	def RadioBtn_UseGDBOnRadioButton( self, event ):
-		event.Skip()
-
-	def RadioBtn_NotUseGDBOnRadioButton( self, event ):
-		event.Skip()
-
-	def Button_OKOnButtonClick( self, event ):
-		event.Skip()
-
-
-###########################################################################
-## Class Dialog_ComparewithOriginalCommand
-###########################################################################
-
-class Dialog_ComparewithOriginalCommand ( wx.Dialog ):
-
-	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = 0 )
-
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-
-		bSizer_CommandandOKButton = wx.BoxSizer( wx.VERTICAL )
-
-		self.Text_YouCanComparewithOriginalbyThisCommand = wx.StaticText( self, wx.ID_ANY, u"以下のコマンドを端末に入力することでクラッシュを再現できます", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.Text_YouCanComparewithOriginalbyThisCommand.Wrap( -1 )
-
-		bSizer_CommandandOKButton.Add( self.Text_YouCanComparewithOriginalbyThisCommand, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
-		bSizer_CommandandCopyButton = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.TextCtrl_ComparewithOriginalCommand = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 500,-1 ), wx.TE_READONLY )
-		bSizer_CommandandCopyButton.Add( self.TextCtrl_ComparewithOriginalCommand, 0, wx.ALL, 5 )
-
-		self.Button_Copy = wx.Button( self, wx.ID_ANY, u"Copy", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
-		bSizer_CommandandCopyButton.Add( self.Button_Copy, 0, wx.ALL, 5 )
-
-
-		bSizer_CommandandOKButton.Add( bSizer_CommandandCopyButton, 1, wx.EXPAND, 5 )
-
-		self.RadioBtn_UseGDB = wx.RadioButton( self, wx.ID_ANY, u"GDBを使用する", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CommandandOKButton.Add( self.RadioBtn_UseGDB, 0, wx.ALL, 5 )
-
-		self.RadioBtn_NotUseGDB = wx.RadioButton( self, wx.ID_ANY, u"GDBを使用しない", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CommandandOKButton.Add( self.RadioBtn_NotUseGDB, 0, wx.ALL, 5 )
-
-		self.Button_OK = wx.Button( self, wx.ID_ANY, u"OK", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer_CommandandOKButton.Add( self.Button_OK, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-
-
-		self.SetSizer( bSizer_CommandandOKButton )
-		self.Layout()
-		bSizer_CommandandOKButton.Fit( self )
-
-		self.Centre( wx.BOTH )
-
-		# Connect Events
-		self.Button_Copy.Bind( wx.EVT_BUTTON, self.Button_CopyOnButtonClick )
-		self.RadioBtn_UseGDB.Bind( wx.EVT_RADIOBUTTON, self.RadioBtn_UseGDBOnRadioButton )
-		self.RadioBtn_NotUseGDB.Bind( wx.EVT_RADIOBUTTON, self.RadioBtn_NotUseGDBOnRadioButton )
-		self.Button_OK.Bind( wx.EVT_BUTTON, self.Button_OKOnButtonClick )
-
-	def __del__( self ):
-		pass
-
-
-	# Virtual event handlers, overide them in your derived class
-	def Button_CopyOnButtonClick( self, event ):
-		event.Skip()
-
-	def RadioBtn_UseGDBOnRadioButton( self, event ):
-		event.Skip()
-
-	def RadioBtn_NotUseGDBOnRadioButton( self, event ):
-		event.Skip()
-
-	def Button_OKOnButtonClick( self, event ):
 		event.Skip()
 
 
