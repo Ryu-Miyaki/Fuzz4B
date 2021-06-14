@@ -34,11 +34,11 @@ class Frame_StartupScreen ( wx.Frame ):
 		self.Menubar_Menubar.Append( self.Menu_FuzzingMenu, u"Fuzzing" )
 
 		self.Menu_View = wx.Menu()
-		self.MenuItem_TextFormString = wx.MenuItem( self.Menu_View, wx.ID_ANY, u"Display Special Characters in UTF-8", wx.EmptyString, wx.ITEM_CHECK )
+		self.MenuItem_TextFormString = wx.MenuItem( self.Menu_View, wx.ID_ANY, u"Display fuzz in UTF-8", wx.EmptyString, wx.ITEM_CHECK )
 		self.Menu_View.Append( self.MenuItem_TextFormString )
 		self.MenuItem_TextFormString.Check( True )
 
-		self.MenuItem_TextFormBytes = wx.MenuItem( self.Menu_View, wx.ID_ANY, u"Display Special Characters as binary data", wx.EmptyString, wx.ITEM_CHECK )
+		self.MenuItem_TextFormBytes = wx.MenuItem( self.Menu_View, wx.ID_ANY, u"Display fuzz as binary data", wx.EmptyString, wx.ITEM_CHECK )
 		self.Menu_View.Append( self.MenuItem_TextFormBytes )
 
 		self.MenuItem_PathFormRelative = wx.MenuItem( self.Menu_View, wx.ID_ANY, u"Display relative path", wx.EmptyString, wx.ITEM_CHECK )

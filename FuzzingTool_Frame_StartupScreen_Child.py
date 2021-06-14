@@ -351,12 +351,7 @@ class FuzzingTool_Frame_StartupScreen_Child( FuzzingTool_Frame_StartupScreen ):
 				if self.textform==TextForm.String:
 					self.WriteFuzztoTextCtrl(fuzztype,text.decode(errors='replace'))
 				else:
-					with open("tmp.txt",mode="w") as tmp:
-						print(text,file=tmp)
-					with open("tmp.txt",mode="r") as tmp:
-						text=tmp.read()
-						self.WriteFuzztoTextCtrl(fuzztype,text[2:-2])
-					os.remove("tmp.txt")
+					self.WriteFuzztoTextCtrl(fuzztype,''.join([r'\x{:02x}'.format(x) for x in text]))
 
 	def WriteFuzztoTextCtrl(self,fuzztype,text):
 		if fuzztype==CRASH_TESTCASE:
